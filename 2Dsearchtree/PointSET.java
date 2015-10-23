@@ -3,28 +3,35 @@ import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.Queue;
 
+/*
+ * Given a set of points on a graph, this class will tell the user two things
+ * 1. What points are contained in a rectangular area specified by the user
+ * 2. What point is nearest to a point specified by the user
+ */
+
 public class PointSET
 {
     private SET<Point2D> setPoints;
     
+    // construct an empty set of points
     public PointSET()
     {
         setPoints = new SET<Point2D>();
     }
-    // construct an empty set of points
     
+    // is the set empty?
     public boolean isEmpty()
     {
         return setPoints.isEmpty() == true;
     }
-    // is the set empty?
     
+    // number of points in the set
     public int size()
     {
         return setPoints.size();
     }
-    // number of points in the set
     
+    // add the point to the set (if it is not already in the set)
     public void insert(Point2D p)
     {
         if (p == null)
@@ -34,8 +41,8 @@ public class PointSET
         
         setPoints.add(p);
     }
-    // add the point to the set (if it is not already in the set)
     
+    // does the set contain point p?
     public boolean contains(Point2D p)
     {
         if (p == null)
@@ -45,8 +52,8 @@ public class PointSET
         
         return setPoints.contains(p);
     }
-    // does the set contain point p?
     
+    // draw all points to standard draw
     public void draw()
     {
         for (Point2D p : setPoints)
@@ -54,8 +61,8 @@ public class PointSET
             p.draw();
         }
     }
-    // draw all points to standard draw
     
+     // all points that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect)
     {
         if (rect == null)
@@ -75,8 +82,8 @@ public class PointSET
         
         return inRectangle;
     }
-    // all points that are inside the rectangle
-    
+   
+    // a nearest neighbor in the set to point p; null if the set is empty 
     public Point2D nearest(Point2D p)
     {
         if (p == null)
@@ -100,10 +107,5 @@ public class PointSET
         
        return nearestPoint;
     }
-    // a nearest neighbor in the set to point p; null if the set is empty 
-
-    public static void main(String[] args)
-    {
-    }
-    // unit testing of the methods (optional) 
+    
 }

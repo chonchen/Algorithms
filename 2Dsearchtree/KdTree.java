@@ -2,8 +2,16 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.Queue;
 
+/*
+ * Given a set of points on a graph, this class make use of a 2D search tree to tell the user two things
+ * 1. What points are contained in a rectangular area specified by the user
+ * 2. What point is nearest to a point specified by the user
+ */
+
+
 public class KdTree
 {
+    //Node structure to be used for each node in the 2D search tree
     private class Node implements Comparable<Node>
     {
         private Point2D p;
@@ -60,24 +68,25 @@ public class KdTree
     private int size = 0;
     private Node nearestN;
     
+    // construct an empty set of points
     public KdTree()
     {
         allpoints = new Queue<Point2D>();
     }
-    // construct an empty set of points
     
+    // is the set empty?
     public boolean isEmpty()
     {
         return size() == 0;
     }
-    // is the set empty?
     
+     // number of points in the set
     public int size()
     {
         return size;
     }
-    // number of points in the set
-    
+   
+    // add the point to the set (if it is not already in the set)
     public void insert(Point2D p)
     {
         if (p == null)
@@ -136,8 +145,8 @@ public class KdTree
            
         }
     }
-    // add the point to the set (if it is not already in the set)
     
+    // does the set contain point p?
     public boolean contains(Point2D p)
     {
         if (p == null)
@@ -155,8 +164,8 @@ public class KdTree
         
         return find(np) == 0;
     }
-    // does the set contain point p?
     
+    // draw all points to standard draw
     public void draw()
     {
         for (Point2D p : allpoints)
@@ -164,8 +173,8 @@ public class KdTree
             p.draw();
         }
     }
-    // draw all points to standard draw
     
+    // all points that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect)
     {
         if (rect == null)
@@ -182,8 +191,8 @@ public class KdTree
         return rectpoints;
          
     }
-    // all points that are inside the rectangle
     
+    // a nearest neighbor in the set to point p; null if the set is empty 
     public Point2D nearest(Point2D p)
     {
         if (p == null)
@@ -202,8 +211,8 @@ public class KdTree
     
         return nearestN.p;
     }
-    // a nearest neighbor in the set to point p; null if the set is empty
     
+    //recursive helper function to find if the 2D tree contains a point and also where to set a point not already in the tree
     private int find(Node np)
     {     
         int comp = current.compareTo(np);
@@ -238,6 +247,7 @@ public class KdTree
         }   
     }
     
+    //recursive helper function to find all points in a rectangular area specified by the user
     private void inRectangle(Node queryNode, RectHV rect)
     {
         if (queryNode != null)
@@ -277,6 +287,7 @@ public class KdTree
         }
     }
     
+    //recursive helper function to find nearest point to a point specified by the user
     private void nearestPoint(Node queryNode, Node traverse)
     {
         if (queryNode.p.distanceSquaredTo(traverse.p) < queryNode.p.distanceSquaredTo(nearestN.p))
@@ -316,7 +327,7 @@ public class KdTree
         }
     }
 
-
+    // unit testing of the methods
     public static void main(String[] args)
     {
         KdTree kd = new KdTree();
@@ -347,5 +358,5 @@ public class KdTree
         System.out.println(kd.nearest(query).toString());
         
     }
-    // unit testing of the methods (optional) 
+    
 }
