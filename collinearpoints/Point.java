@@ -1,38 +1,43 @@
 import java.util.Comparator;
 import edu.princeton.cs.algs4.StdDraw;
+
+/*
+ * This class instantiates a point that will be used by Linesegment.java as well as both collinearpoint classes
+ */
     
 public class Point implements Comparable<Point>
 {
     private final int x;
     private final int y;
     
+     // constructs the point (x, y)
     public Point(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
-    // constructs the point (x, y)
-
+   
+    // draws this point
     public void draw()
     {
         //StdDraw.setPenRadius(.01);
         StdDraw.point(x, y);
     }
-    // draws this point
    
+    // draws the line segment from this point to that point
     public void drawTo(Point that)
     {
         //StdDraw.setPenRadius(.001);
         StdDraw.line(this.x, this.y, that.x, that.y);
     }
-    // draws the line segment from this point to that point
     
+    // string representation
     public String toString()
     {
         return "(" + x + ", " + y + ")";
     }
-    // string representation
-
+    
+    // compare two points by y-coordinates, breaking ties by x-coordinates
     public int compareTo(Point that)
     {
         if (this.y > that.y)
@@ -59,8 +64,8 @@ public class Point implements Comparable<Point>
             }
         }
     }
-    // compare two points by y-coordinates, breaking ties by x-coordinates
-   
+    
+    // the slope between this point and that point
     public double slopeTo(Point that)
     {
         if (that.y == this.y)
@@ -83,14 +88,14 @@ public class Point implements Comparable<Point>
             return (double) (that.y - this.y) / (that.x - this.x);
         }
     }
-    // the slope between this point and that point
     
+    // compare two points by slopes they make with this point
     public Comparator<Point> slopeOrder()
     {
         return new PointComparator();
     }
-    // compare two points by slopes they make with this point
     
+    //comparator to be used by slopeOrder() method. It compares the slopes of two lines created by this point and two other points
     private class PointComparator implements Comparator<Point>
     {
         public int compare(Point that1, Point that2)
@@ -109,6 +114,7 @@ public class Point implements Comparable<Point>
             }
         }
         
+        //not going to use this interface method
         public boolean equals()
         {
             throw new java.lang.UnsupportedOperationException();

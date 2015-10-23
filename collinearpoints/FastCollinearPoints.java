@@ -1,5 +1,15 @@
 import java.util.Arrays;
 
+/*
+ * This class finds all line segments that can be created by four or more points by setting a random point as the origin
+ * and finding all the line segments that it creates with all of the other points. These line segments are then ordered
+ * by slope. Any line segments with the same slope must be collinear. If we find at least three line segments with the same 
+ * slope, then we have a line segment with at least four points.
+ * 
+ * This is then done with each other point being set as the origin.
+ */
+
+
 public class FastCollinearPoints
 {
     private LineSegment[] lines;
@@ -7,6 +17,7 @@ public class FastCollinearPoints
     private Point[] minPoints;
     private int numoflines = 0;
     
+    // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points)
     {
         lines = new LineSegment[1];
@@ -98,8 +109,27 @@ public class FastCollinearPoints
             
         }
     }
-    // finds all line segments containing 4 or more points
     
+    // the number of line segments
+    public int numberOfSegments()
+    {
+        return numoflines;
+    }
+    
+    // the line segments
+    public LineSegment[] segments()
+    {
+        LineSegment[] segments = new LineSegment[numoflines];
+        for (int i = 0; i < numoflines; i++)
+        {
+            segments[i] = lines[i];
+        }
+        
+        return segments;
+    }
+    
+    
+    //helper method that resizes the arrays containing our line segments, slopes, and minimum points becomes full
     private void resize()
     {
         if (numoflines > lines.length)
@@ -118,22 +148,4 @@ public class FastCollinearPoints
             minPoints = mintemp;
         }
     }
-    
-    public int numberOfSegments()
-    {
-        return numoflines;
-    }
-    // the number of line segments
-    
-    public LineSegment[] segments()
-    {
-        LineSegment[] segments = new LineSegment[numoflines];
-        for (int i = 0; i < numoflines; i++)
-        {
-            segments[i] = lines[i];
-        }
-        
-        return segments;
-    }
-    // the line segments
 }

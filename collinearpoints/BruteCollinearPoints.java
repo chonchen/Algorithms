@@ -1,10 +1,16 @@
 import java.util.Arrays;
 
+/*
+ * This class takes in an array of points given by the user. It uses brute force to find all line segments that can be created
+ * by four points.
+ */
+
 public class BruteCollinearPoints {
     
     private LineSegment[] lines;
     private int numoflines = 0;
     
+    // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points)
     {
         lines = new LineSegment[1];
@@ -69,8 +75,26 @@ public class BruteCollinearPoints {
         }
         
     }
-    // finds all line segments containing 4 points
     
+    // the number of line segments
+    public int numberOfSegments()
+    {
+        return numoflines;
+    }
+   
+    // the line segments
+    public LineSegment[] segments()
+    {
+        LineSegment[] segments = new LineSegment[numoflines];
+        for (int i = 0; i < numoflines; i++)
+        {
+            segments[i] = lines[i];
+        }
+        
+        return segments;
+    }
+    
+    //helper method that resizes the array containing our line segments when it becomes full
     private void resize()
     {
         if (numoflines > lines.length)
@@ -83,22 +107,4 @@ public class BruteCollinearPoints {
             lines = temp;
         }
     }
-    
-    public int numberOfSegments()
-    {
-        return numoflines;
-    }
-    // the number of line segments
-   
-    public LineSegment[] segments()
-    {
-        LineSegment[] segments = new LineSegment[numoflines];
-        for (int i = 0; i < numoflines; i++)
-        {
-            segments[i] = lines[i];
-        }
-        
-        return segments;
-    }
-    // the line segments
 }

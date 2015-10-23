@@ -1,8 +1,13 @@
+/*
+ * Creates a line segment from two points
+ */
+
 public class LineSegment {
     
     private final Point p;
     private final Point q;
     
+    // constructs the line segment between points p and q
     public LineSegment(Point p, Point q)
     {
         if (p == null || q == null) {
@@ -11,17 +16,17 @@ public class LineSegment {
         this.p = p;
         this.q = q;
     }
-    // constructs the line segment between points p and q
     
+    // draws this line segment
     public void draw()
     {
         p.drawTo(q);
     }
-    // draws this line segment
     
+     // string representation
     public String toString()
     {
         return p + " -> " + q;
     }
-    // string representation
+   
 }
