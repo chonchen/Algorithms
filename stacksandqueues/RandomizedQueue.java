@@ -2,26 +2,36 @@ import java.util.Iterator;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdOut;
 
-public class RandomizedQueue<Item> implements Iterable<Item> {
+/**
+ * This class creates a queue that dequeues a random list item to the user. It uses an array instead of a linked list for better
+ * performance in the randomized dequeue.
+ **/
+
+public class RandomizedQueue<Item> implements Iterable<Item>
+{
    
    private Item[] queue;
    private int size = 0;
     
+   // construct an empty randomized queue
    public RandomizedQueue()
    {
       queue = (Item[]) new Object[1];
-   }// construct an empty randomized queue
+   }
    
+   // is the queue empty?
    public boolean isEmpty()
    {
        return size() == 0;
-   }// is the queue empty?
+   }
    
+   // return the number of items on the queue
    public int size()
    {
        return size;
-   }// return the number of items on the queue
+   }
    
+   // add the item
    public void enqueue(Item item)
    {
        if (item == null)
@@ -42,10 +52,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
        }
        
        queue[size - 1] = item;
-       
-
-   }// add the item
+   }
    
+   // remove and return a random item
    public Item dequeue()
    {
        if (isEmpty())
@@ -84,8 +93,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
        
        return item;
        
-   }// remove and return a random item
+   }
    
+   // return (but do not remove) a random item
    public Item sample()
    {
        if (isEmpty())
@@ -104,13 +114,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
        Item item = queue[rand];
        
        return item;
-   }// return (but do not remove) a random item
+   }
    
+   // return an independent iterator over items in random order
    public Iterator<Item> iterator()
    {
        return new RandomIterator();
-   }// return an independent iterator over items in random order
+   }
    
+   //the iterator that iterator() method will use
    private class RandomIterator implements Iterator<Item> {
         private int iterated = 0;
         private Item[] shuffle;
@@ -154,6 +166,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     
     }
    
+   // unit testing
    public static void main(String[] args)
    {
        RandomizedQueue<String> rq = new RandomizedQueue<String>();
@@ -169,5 +182,5 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
        for (String s : rq)
             StdOut.println(s);
    
-   }// unit testing
+   }
 }
