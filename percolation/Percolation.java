@@ -1,6 +1,12 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-public class Percolation {
+/**
+ * This class creates an N by N grid where N is given by the user. The user can open nodes in the grid one-by-one and check if the
+ * system percolates from the top of the grid to the bottom.
+**/
+
+public class Percolation
+{
     private boolean[][] grid;
     private int dimension;
     private int startpoint = 0;
@@ -8,7 +14,9 @@ public class Percolation {
     private WeightedQuickUnionUF uf;
     private WeightedQuickUnionUF uf2;
     
-    public Percolation(int N) {
+    // create N-by-N grid, with all sites blocked
+    public Percolation(int N)
+    {
         
         if (N <= 0) {
             throw new IllegalArgumentException("The array size cannot be less than 1.");
@@ -23,8 +31,11 @@ public class Percolation {
         uf = new WeightedQuickUnionUF(dimension * dimension + 2);
         uf2 = new WeightedQuickUnionUF(dimension * dimension + 1);
         
-    }               // create N-by-N grid, with all sites blocked
-    public void open(int i, int j) {
+    }              
+    
+    // open site (row i, column j) if it is not open already
+    public void open(int i, int j)
+    {
         
         if (i <= 0 || i > dimension || j <= 0 || j > dimension) {
             
@@ -75,8 +86,11 @@ public class Percolation {
             }
         }
         
-    }          // open site (row i, column j) if it is not open already
-    public boolean isOpen(int i, int j) {
+    }          
+    
+    // is site (row i, column j) open?
+    public boolean isOpen(int i, int j)
+    {
         
         if (i <= 0 || i > dimension || j <= 0 || j > dimension) {
             
@@ -92,8 +106,11 @@ public class Percolation {
         else {
             return false;
         }
-    }     // is site (row i, column j) open?
-    public boolean isFull(int i, int j) {
+    }     
+    
+    // is site (row i, column j) full?
+    public boolean isFull(int i, int j)
+    {
         
         if (i <= 0 || i > dimension || j <= 0 || j > dimension) {
             
@@ -110,19 +127,23 @@ public class Percolation {
             return false;
         }
         
-    }     // is site (row i, column j) full?
-    public boolean percolates() {
+    }
+    
+    // does the system percolate?
+    public boolean percolates()
+    {
         return uf.connected(startpoint, endpoint);
     }
-    // does the system percolate?
     
-    private int gridvalue(int i, int j) {
+    //helper function to check if a node is open
+    private int gridvalue(int i, int j)
+    {
         return (i - 1) * dimension + j;
     }
 
-   /** 
-    public static void main(String[] args){
-        
+    // test client
+    public static void main(String[] args)
+    {    
         Percolation p = new Percolation(5);
         
         p.open(1,1);
@@ -138,10 +159,6 @@ public class Percolation {
         p.open(4,3);
         p.open(5,3);
         System.out.println(p.isFull(3,2));
-        System.out.println(p.percolates());
-        
-        
-        
-    }  // test client (optional)
-    **/
+        System.out.println(p.percolates());   
+    }
 }
