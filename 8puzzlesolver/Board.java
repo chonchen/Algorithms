@@ -1,5 +1,22 @@
 import java.util.Iterator;
 
+/*
+ * This class creates a board to be used to solve an 8puzzle. The puzzle is usually a 3 x 3 grid that has one tile missing.
+ * The player moves ajacent tiles into that empty space to form a picture. This case only uses a grid with integers, and so
+ * instead of making a picture, we are trying to put the integers 1 through 8 in order in the following way
+ * 
+ * 1 2 3
+ * 4 5 6
+ * 7 8 0
+ * 
+ * Where 0 denotes the empty space.
+ * 
+ * This exercise uses the A* algorithm to solve the puzzle
+ * 
+ * The twin board is used to detect any unsolveable puzzles
+ * 
+ */
+
 public class Board
 {
     private int[][] board;
@@ -7,6 +24,8 @@ public class Board
     private int izero;
     private int jzero;
         
+    // construct a board from an N-by-N array of blocks
+    // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks)
     {
         N = blocks.length;
@@ -27,15 +46,14 @@ public class Board
             }
         }  
     }
-    // construct a board from an N-by-N array of blocks
-    // (where blocks[i][j] = block in row i, column j)
     
+    // board dimension N
     public int dimension()
     {
         return N;
     }
-    // board dimension N
-    
+   
+    // number of blocks out of place
     public int hamming()
     {
         int[] hammingarray = new int[N * N];
@@ -67,8 +85,8 @@ public class Board
         return count;
         
     }
-    // number of blocks out of place
     
+    // sum of Manhattan distances between blocks and goal
     public int manhattan()
     {
         int[] manhattanarray = new int[N * N];
@@ -100,14 +118,15 @@ public class Board
         return count;
         
     }
-    // sum of Manhattan distances between blocks and goal
     
+    // is this board the goal board?
     public boolean isGoal()
     {
         return hamming() == 0;
     }
-    // is this board the goal board?
     
+    // a board that is obtained by exchanging any pair of blocks--used to see if the board is solveable
+    // if the twin is solveable, then the initial board is not
     public Board twin()
     {
         int i = 0;
@@ -127,9 +146,9 @@ public class Board
         return twin;
         
     }
-    // a board that is obtained by exchanging any pair of blocks
     
     
+    // does this board equal y?
     public boolean equals(Object y)
     {
         if (y == this) return true;
@@ -145,8 +164,8 @@ public class Board
         
         return s1.equals(s2);
     }
-    // does this board equal y?
     
+    // all neighboring boards--boards that can be obtained in one move
     public Iterable<Board> neighbors()
     {
         BoardIterable bi = new BoardIterable();
@@ -190,6 +209,26 @@ public class Board
         return bi;
     }
     
+    // string representation of this board
+    public String toString()
+    {
+        StringBuilder s = new StringBuilder();
+        s.append(dimension() + "\n");
+        for (int i = 0; i < dimension(); i++)
+        {
+            for (int j = 0; j < dimension(); j++)
+            {
+                s.append(String.format("%2d ", board[i][j]));
+            }
+        
+            s.append("\n");
+        }
+        
+        return s.toString();
+        
+    }
+    
+    //iterable to be returned by neighbors()
     private class BoardIterable implements Iterable<Board>
     {
         private Board[] keyarray = new Board[4];
@@ -215,6 +254,7 @@ public class Board
             return new BoardIterator();
         }
         
+        //iterator to be returned by iterator()
         private class BoardIterator implements Iterator<Board>
         {
             private int iterated = 0;
@@ -241,6 +281,7 @@ public class Board
             }
         }
         
+        //resizes keyarray when it is full
         private void resize()
         {
             if (size > keyarray.length)
@@ -254,30 +295,9 @@ public class Board
             }
         }
         
-    }
+    } 
     
-    
-    // all neighboring boards
-    
-    public String toString()
-    {
-        StringBuilder s = new StringBuilder();
-        s.append(dimension() + "\n");
-        for (int i = 0; i < dimension(); i++)
-        {
-            for (int j = 0; j < dimension(); j++)
-            {
-                s.append(String.format("%2d ", board[i][j]));
-            }
-        
-            s.append("\n");
-        }
-        
-        return s.toString();
-        
-    }
-    // string representation of this board (in the output format specified below)
-    
+    //helper function to swap two tiles
     private void swap(int i1, int j1, int i2, int j2)
     {
         int temp = board[i1][j1];
@@ -285,7 +305,7 @@ public class Board
         board[i2][j2] = temp;   
     }
     
-
+    // unit tests
     public static void main(String[] args)
     {
  
@@ -305,5 +325,5 @@ public class Board
             System.out.println(b.toString());
         }
     }
-    // unit tests (not graded)
+    
 }
