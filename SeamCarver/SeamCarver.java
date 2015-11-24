@@ -1,7 +1,5 @@
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
 import java.awt.Color;
-import java.util.Stack;
 
 public class SeamCarver
 {
@@ -21,27 +19,46 @@ public class SeamCarver
         }
     }
     
-    private Picture picture;
-    
     private int width;
     
     private int height;
     
-    private DirectedVertex[][] energyArray;
+    private Color[][] picColorValues;
       
-    
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture)
-    {
-        this.picture = new Picture(picture);
+    {   
+        if (picture == null)
+        {
+            throw new NullPointerException("Please construct with a picture");
+        }
         
-        height = picture.height();
         width = picture.width();
+        height = picture.height();
+        picColorValues = new Color[width][height];
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                picColorValues[x][y] = picture.get(x, y);
+            }
+        }
     }
     
     // current picture
     public Picture picture()
     {
+        Picture picture = new Picture(width, height);
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                picture.set(x, y, picColorValues[x][y]);
+            }
+        }
+        
         return picture;
     }
     
@@ -60,8 +77,13 @@ public class SeamCarver
     // energy of pixel at column x and row y 
     public double energy(int x, int y)
     {
-        if (x == 0 || x == picture.width() - 1
-                || y == 0 || y == picture.height() - 1)
+        if (x < 0 || x >= width || y < 0 || y >= height)
+        {
+            throw new IndexOutOfBoundsException("x and y must be within the picture");
+        }
+        
+        if (x == 0 || x == width - 1
+                || y == 0 || y == height - 1)
         {
             return 1000.00;
         }
@@ -81,99 +103,62 @@ public class SeamCarver
     // sequence of indices for vertical seam
     public int[] findVerticalSeam()
     {   
-        DirectedVertex end = new DirectedVertex(-1, 1000);
-        
-        energyArray = new DirectedVertex[height][width];
-        
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                energyArray[y][x] = new DirectedVertex(x, energy(x, y));
-            }
-        }
-        
-        for (int x = 0; x < width; x++)
-        {
-            energyArray[0][x].distTo = 1000;
-        }
-             
-        for (int y = 1; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                DirectedVertex shortest = energyArray[y - 1][x];
-                
-                if (x - 1 >= 0)
-                {
-                    if (energyArray[y - 1][x - 1].distTo <= shortest.distTo)
-                    {
-                        shortest = energyArray[y - 1][x - 1];
-                    }
-                }
-                
-                if (x + 1 < width)
-                {
-                    if (energyArray[y - 1][x + 1].distTo < shortest.distTo)
-                    {
-                        shortest = energyArray[y - 1][x + 1];
-                    }   
-                }
-                
-                energyArray[y][x].from = shortest.vertex;
-                energyArray[y][x].distTo = energyArray[y][x].energy + shortest.distTo;
-                
-                if (y == height - 1)
-                {
-                    if (energyArray[y][x].distTo < end.distTo)
-                    {
-                        end = energyArray[y][x];
-                    }
-                }
-            }
-            
-        }
-        
-        int[] seam = new int[height];
-        
-        DirectedVertex traverse = end;
-        seam[height - 1] = traverse.vertex;
-        
-        for (int i = height - 2; i >= 0; i--)
-        {
-            traverse = energyArray[i][traverse.from];
-            seam[i] = traverse.vertex;
-        }
-        
-        return seam;
+        return findSeam(height, width, true);
     }
     
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam)
-    {}
+    {
+        seamValidation(seam, false);
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = seam[x] + 1; y < height; y++)
+            {
+                picColorValues[x][y - 1] = picColorValues[x][y];
+            }
+            picColorValues[x][height - 1] = null;
+        }
+        
+        height--;
+    }
     
     // remove vertical seam from current picture    
     public void removeVerticalSeam(int[] seam)
-    {}
+    {
+        seamValidation(seam, true);
+        
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = seam[y] + 1; x < width; x++)
+            {
+                picColorValues[x - 1][y] = picColorValues[x][y];
+                
+            }
+            picColorValues[width - 1][y] = null;
+        }
+        
+        width--;
+    
+    }
     
     private double squareRGB(int x1, int y1, int x2, int y2)
     {
-        Color color1 = picture.get(x1, y1);
-        Color color2 = picture.get(x2, y2);
+        Color color1 = picColorValues[x1][y1];
+        Color color2 = picColorValues[x2][y2];
         
         double deltaRed = color1.getRed() - color2.getRed();
         double deltaGreen = color1.getGreen() - color2.getGreen();
         double deltaBlue = color1.getBlue() - color2.getBlue();
         
-        return Math.pow(deltaRed, 2) +  Math.pow(deltaGreen, 2) +  Math.pow(deltaBlue, 2);
-    }
-    
+        return deltaRed * deltaRed + deltaGreen * deltaGreen + deltaBlue * deltaBlue;
+    } 
     
     private int[] findSeam(int parentArrayDimension, int childArrayDimension, boolean isVertical)
     {   
-        DirectedVertex end = new DirectedVertex(-1, 1000);
+        DirectedVertex end = new DirectedVertex(0, 1000);
         
-        energyArray = new DirectedVertex[parentArrayDimension][childArrayDimension];
+        DirectedVertex[][] energyArray = new DirectedVertex[parentArrayDimension][childArrayDimension];
         
         for (int i = 0; i < parentArrayDimension; i++)
         {
@@ -249,6 +234,54 @@ public class SeamCarver
             return energy(i, j);
         }
     
+    }
+    
+    private void seamValidation(int[] seam, boolean isVertical)
+    {
+        int dimension1;
+        int dimension2;
+        
+        if (isVertical)
+        {
+            dimension1 = height;
+            dimension2 = width;
+        }
+        else
+        {
+            dimension1 = width;
+            dimension2 = height;
+        }
+        
+        if (seam == null)
+        {
+            throw new NullPointerException("Must include seam");
+        }
+        
+        if (seam.length != dimension1)
+        {
+            throw new IllegalArgumentException("Seam length exceeds picture dimension");
+        }
+        
+        for (int i = 0; i < seam.length; i++)
+        {
+            if (i > 0)
+            {
+                if (Math.abs(seam[i] - seam[i - 1]) > 1)
+                {
+                    throw new IllegalArgumentException("Seam is not connected");
+                }
+            }
+            
+            if (seam[i] < 0 || seam[i] > dimension2 - 1)
+            {
+                throw new IllegalArgumentException("Seam must be within the picture");
+            }
+        }
+        
+        if (dimension2 == 1)
+        {
+            throw new IllegalArgumentException("Dimension is already 1 pixel");
+        }
     }
     
 }
