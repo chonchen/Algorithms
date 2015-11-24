@@ -2,23 +2,7 @@ import edu.princeton.cs.algs4.Picture;
 import java.awt.Color;
 
 public class SeamCarver
-{
-    private class DirectedVertex
-    {
-        private int from;
-        private int vertex;
-        private double energy;
-        private double distTo;
-        
-        public DirectedVertex(int vertex, double energy)
-        {
-            from = -1;
-            this.vertex = vertex;
-            this.energy = energy;
-            distTo = Double.POSITIVE_INFINITY;
-        }
-    }
-    
+{   
     private int width;
     
     private int height;
@@ -111,15 +95,23 @@ public class SeamCarver
     {
         seamValidation(seam, false);
         
+        Color[][] temp = new Color[width][height - 1];
+        
         for (int x = 0; x < width; x++)
         {
-            for (int y = seam[x] + 1; y < height; y++)
+            int tempY = 0;
+            
+            for (int y = 0; y < height; y++)
             {
-                picColorValues[x][y - 1] = picColorValues[x][y];
+                if (y != seam[x])
+                {
+                    temp[x][tempY] = picColorValues[x][y];
+                    tempY++;
+                }
             }
-            picColorValues[x][height - 1] = null;
         }
         
+        picColorValues = temp;
         height--;
     }
     
@@ -128,16 +120,23 @@ public class SeamCarver
     {
         seamValidation(seam, true);
         
+        Color[][] temp = new Color[width - 1][height];
+        
         for (int y = 0; y < height; y++)
         {
-            for (int x = seam[y] + 1; x < width; x++)
+            int tempX = 0;
+            
+            for (int x = 0; x < width; x++)
             {
-                picColorValues[x - 1][y] = picColorValues[x][y];
-                
+                if (x != seam[y])
+                {
+                    temp[tempX][y] = picColorValues[x][y];
+                    tempX++;
+                } 
             }
-            picColorValues[width - 1][y] = null;
         }
         
+        picColorValues = temp;
         width--;
     
     }
@@ -156,53 +155,54 @@ public class SeamCarver
     
     private int[] findSeam(int parentArrayDimension, int childArrayDimension, boolean isVertical)
     {   
-        DirectedVertex end = new DirectedVertex(0, 1000);
-        
-        DirectedVertex[][] energyArray = new DirectedVertex[parentArrayDimension][childArrayDimension];
+        double[][] energy = new double[parentArrayDimension][childArrayDimension];
+        double[][] sumEnergy = new double[parentArrayDimension][childArrayDimension];
+        int[][] fromPaths = new int [parentArrayDimension][childArrayDimension];
+        int shortestEndVertex = 0;
         
         for (int i = 0; i < parentArrayDimension; i++)
         {
             for (int j = 0; j < childArrayDimension; j++)
             {
-                energyArray[i][j] = new DirectedVertex(j, orientEnergy(i, j, isVertical));
+                energy[i][j] = orientEnergy(i, j, isVertical);
             }
         }
         
         for (int j = 0; j < childArrayDimension; j++)
         {
-            energyArray[0][j].distTo = 1000;
+            sumEnergy[0][j] = 1000;
         }
              
         for (int i = 1; i < parentArrayDimension; i++)
         {
             for (int j = 0; j < childArrayDimension; j++)
             {
-                DirectedVertex shortest = energyArray[i - 1][j];
+                int shortestPathUp = j;
                 
                 if (j - 1 >= 0)
                 {
-                    if (energyArray[i - 1][j - 1].distTo <= shortest.distTo)
+                    if (sumEnergy[i - 1][j - 1] <= sumEnergy[i - 1][shortestPathUp])
                     {
-                        shortest = energyArray[i - 1][j - 1];
+                        shortestPathUp = j - 1;
                     }
                 }
                 
                 if (j + 1 < childArrayDimension)
                 {
-                    if (energyArray[i - 1][j + 1].distTo < shortest.distTo)
+                    if (sumEnergy[i - 1][j + 1] < sumEnergy[i - 1][shortestPathUp])
                     {
-                        shortest = energyArray[i - 1][j + 1];
+                        shortestPathUp = j + 1;
                     }   
                 }
                 
-                energyArray[i][j].from = shortest.vertex;
-                energyArray[i][j].distTo = energyArray[i][j].energy + shortest.distTo;
+                fromPaths[i][j] = shortestPathUp;
+                sumEnergy[i][j] = energy[i][j] + sumEnergy[i - 1][shortestPathUp];
                 
                 if (i == parentArrayDimension - 1)
                 {
-                    if (energyArray[i][j].distTo < end.distTo)
+                    if (sumEnergy[i][j] < sumEnergy[i][shortestEndVertex])
                     {
-                        end = energyArray[i][j];
+                        shortestEndVertex = j;
                     }
                 }
             }
@@ -211,13 +211,13 @@ public class SeamCarver
         
         int[] seam = new int[parentArrayDimension];
         
-        DirectedVertex traverse = end;
-        seam[parentArrayDimension - 1] = traverse.vertex;
+        int traverse = shortestEndVertex;
+        seam[parentArrayDimension - 1] = traverse;
         
         for (int i = parentArrayDimension - 2; i >= 0; i--)
         {
-            traverse = energyArray[i][traverse.from];
-            seam[i] = traverse.vertex;
+            traverse = fromPaths[i + 1][traverse];
+            seam[i] = traverse;
         }
         
         return seam;
