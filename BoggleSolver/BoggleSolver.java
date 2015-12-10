@@ -108,53 +108,20 @@ public class BoggleSolver
         
         if (dictTrie.containsPrefix(s))
         {
-            if (row - 1 >= 0)
+            for (int i = row - 1; i <= row + 1; i++)
             {
-                if (!thisMarked[row - 1][col])
+                if (i >= 0 && i < board.rows())
                 {
-                    boggleTraverse(row - 1, col, board, thisMarked, thisString, validWords);
+                    for (int j = col - 1; j <= col + 1; j++)
+                    {
+                        if (j >= 0 && j < board.cols() && !thisMarked[i][j])
+                        {
+                            boggleTraverse(i, j, board, thisMarked, thisString, validWords);
+                        }
+                    }
                 }
-                
-                if (col - 1 >= 0 && !thisMarked[row - 1][col - 1])
-                {
-                    boggleTraverse(row - 1, col - 1, board, thisMarked, thisString, validWords);
-                }
-                
-                if (col + 1 < board.cols() && !thisMarked[row - 1][col + 1])
-                {
-                    boggleTraverse(row - 1, col + 1, board, thisMarked, thisString, validWords);
-                }    
-            }
-            
-            if (row + 1 < board.rows())
-            {
-                if (!thisMarked[row + 1][col])
-                {
-                    boggleTraverse(row + 1, col, board, thisMarked, thisString, validWords);
-                }
-                
-                if (col - 1 >= 0 && !thisMarked[row + 1][col - 1])
-                {
-                    boggleTraverse(row + 1, col - 1, board, thisMarked, thisString, validWords);
-                }
-                
-                if (col + 1 < board.cols() && !thisMarked[row + 1][col + 1])
-                {
-                    boggleTraverse(row + 1, col + 1, board, thisMarked, thisString, validWords);
-                }    
-            }
-            
-            if (col - 1 >= 0 && !thisMarked[row][col - 1])
-            {
-                boggleTraverse(row, col - 1, board, thisMarked, thisString, validWords);
-            }
-            
-            if (col + 1 < board.cols() && !thisMarked[row][col + 1])
-            {
-                boggleTraverse(row, col + 1, board, thisMarked, thisString, validWords);
-            }
-        }
-        
+            }   
+        }     
     }
     
     public static void main(String[] args)
