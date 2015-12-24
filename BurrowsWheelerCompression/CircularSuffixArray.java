@@ -1,10 +1,7 @@
-import java.util.Arrays;
-import java.util.Comparator;
-
 public class CircularSuffixArray
 {   
     private int inputLength;
-    private Integer[] indexes;
+    private int[] indexes;
     
     // circular suffix array of s
     public CircularSuffixArray(String s)
@@ -15,16 +12,17 @@ public class CircularSuffixArray
         }
         
         inputLength = s.length();
-        indexes = new Integer[inputLength];
-        char[] charArrayOfS = new char[inputLength];
+        indexes = new int[inputLength];
         
         for (int i = 0; i < inputLength; i++)
         {
             indexes[i] = i;
-            charArrayOfS[i] = s.charAt(i);
         }
+        
+        int[] aux = new int[indexes.length];
+        
+        sort(s, indexes, 0, s.length() - 1, 0, aux);
      
-        Arrays.sort(indexes, new IndexComparator(charArrayOfS));
     }
     
     // length of s
@@ -44,54 +42,82 @@ public class CircularSuffixArray
         return indexes[i];
     }
     
-    private class IndexComparator implements Comparator<Integer>
+    private void sort(String a, int[] index, int lo, int hi, int charIndex, int[] aux)
     {
-        private char[] charArray;
-            
-        public IndexComparator(char[] charArray)
+        
+        if (charIndex >= a.length())
         {
-            this.charArray = charArray;
+            return;
         }
         
-        public int compare(Integer indexInput1, Integer indexInput2)
+        if (hi <= lo + 15)
         {
-            int index1 = indexInput1;
-            int index2 = indexInput2;
-            
-            for (int i = 0; i < charArray.length; i++)
+            insertSort(a, index, lo, hi, charIndex);
+            return;
+        }
+        
+        int[] count = new int[256 + 2];
+        
+        for (int i = lo; i <= hi; i++)
+        {
+            count[a.charAt((index[i] + charIndex) % a.length()) + 2]++;
+        }
+        
+        for (int i = 0; i < count.length - 1; i++)
+        {
+            count[i + 1] += count[i];
+        }
+        
+        for (int i = lo; i <= hi; i++)
+        {
+            aux[count[a.charAt((index[i] + charIndex) % a.length()) + 1]++] = index[i];
+        }
+        
+        for (int i = lo; i <= hi; i++)
+        {
+            index[i] = aux[i - lo];
+        }
+        
+        for (int i = 0; i < 256; i++)
+        {
+            sort(a, index, lo + count[i], lo + count[i + 1] - 1, charIndex + 1, aux);
+        }
+        
+    }
+    
+    private void insertSort(String a, int[] index, int lo, int hi, int charIndex)
+    {
+        for (int i = lo; i <= hi; i++)
+        {
+            for (int j = i; j > lo && less(a, index[j], index[j-1], charIndex); j--)
             {
-                if (charArray[index1] > charArray[index2])
-                {
-                    return 1;
-                }
-                else if (charArray[index1] < charArray[index2])
-                {
-                    return -1;
-                }
-                else
-                {
-                    if (index1 == charArray.length - 1)
-                    {
-                        index1 = 0;
-                    }
-                    else
-                    {
-                        index1++;
-                    }
-                    
-                    if (index2 == charArray.length - 1)
-                    {
-                        index2 = 0;
-                    }
-                    else
-                    {
-                        index2++;
-                    }                    
-                }
+                exchange(index, j, j-1);
             }
-            return 0;
         }
-        
+    }
+    
+    private void exchange(int[] index, int i, int j)
+    {
+        int temp = index[i];
+        index[i] = index[j];
+        index[j] = temp;
+    }
+    
+    private boolean less(String a, int indexValue1, int indexValue2, int charIndex)
+    {
+        for (int i = charIndex % a.length(); i < a.length(); i++)
+        {
+            if (a.charAt((indexValue1 + i) % a.length()) < a.charAt((indexValue2 + i) % a.length()))
+            {
+                return true;
+            }
+            
+            if (a.charAt((indexValue1 + i) % a.length()) > a.charAt((indexValue2 + i) % a.length()))
+            {
+                return false;
+            }
+        }
+        return false;
     }
     
     // unit testing of the methods

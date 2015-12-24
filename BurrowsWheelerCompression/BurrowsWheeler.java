@@ -1,8 +1,5 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.LinkedList;
 
 public class BurrowsWheeler
 {
@@ -44,46 +41,31 @@ public class BurrowsWheeler
         int first = BinaryStdIn.readInt();
         String transform = BinaryStdIn.readString();
         
-        char[] firstLetters = transform.toCharArray();
         int[] next = new int[transform.length()];
         char[] decodedChars = new char[transform.length()];
         
-        Hashtable<Character, LinkedList<Integer>> hashtable = new Hashtable<Character, LinkedList<Integer>>();
+        int[] count = new int[256 + 1];
+              
         for (int i = 0; i < transform.length(); i++)
         {
-            if (!hashtable.containsKey(transform.charAt(i)))
-            {
-                hashtable.put(transform.charAt(i), new LinkedList<Integer>());
-            }
-            LinkedList<Integer> addIndex = hashtable.get(transform.charAt(i));
-            addIndex.add(i);
+            count[transform.charAt(i) + 1]++;
         }
-
-        Arrays.sort(firstLetters);
         
-        for (int i = 0; i < firstLetters.length; i++)
+        for (int i = 0; i < count.length - 1; i++)
         {
-            LinkedList<Integer> removeIndex = hashtable.get(firstLetters[i]);
-            
-            int j = removeIndex.remove();
-            
-            if (i == j)
-            {
-                if (removeIndex.size() > 0)
-                {
-                    int temp = j;
-                    j = removeIndex.remove();
-                    removeIndex.addFirst(temp);
-                }
-            }
-            
-            next[i] = j;
+            count[i + 1] += count[i];
         }
+        
+        for (int i = 0; i < transform.length(); i++)
+        {
+            next[count[transform.charAt(i)]++] = i;
+        }
+        
         
         int nextIndex = first;
         for (int i = 0; i < next.length; i++)
         {
-            decodedChars[i] = firstLetters[nextIndex];
+            decodedChars[i] = transform.charAt(next[nextIndex]);
             nextIndex = next[nextIndex];
         }
         
